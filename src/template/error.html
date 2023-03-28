@@ -1,0 +1,9 @@
+<div id="error" hidden style="text-align: center; color: red">
+  <strong>{{error.message}}</strong>
+</div>
+<input id="errorValue" value="{{error}}" hidden />
+<script>
+  if (document.getElementById("errorValue").value != "") {
+    document.getElementById("error").hidden = false;
+  }
+</script>
