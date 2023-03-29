@@ -18,32 +18,16 @@
               </div>
               {{>./template/error.html}}
               <div class="box-sizing">
-                <h1>CUE template - {{testData}}</h1>
-                <div class="page-options" id="pre-page-options">
-                  <ul>
-                    <li><a href="http://www.qld.gov.au/share/">Share</a></li>
-                    <li>
-                      <a href="http://www.qld.gov.au/help/feeds/">Subscribe</a>
-                      <ul>
-                        <li><a href="#">RSS feed</a></li>
-                        <li><a href="#">Atom feed</a></li>
-                        <li><a href="#">Email newsletter</a></li>
-                      </ul>
-                    </li>
-                  </ul>
-                </div>
-                <div class="section" id="section-introduction">
-                  <p>Welcome to the CUE 3.0 template!</p>
+                <h1>{{site.siteName}}</h1>
 
-                  <p>
-                    Use the 'Themes' and 'Page models' items from the site
-                    navigation menu to preview different variants that are
-                    included with the CUE template.
-                  </p>
+                <div style="margin-top: 10px">
+                  <form action="/report">
+                    <button style="font-size: large">Report a problem</button>
+                  </form>
                 </div>
                 <div>
                   <h4 style="margin-bottom: 0">BCC Login</h4>
-                  <form method="post" action="/login">
+                  <form method="post" action="/login" autocomplete="off">
                     <input name="username" placeholder="Username" />
                     <input
                       name="password"
