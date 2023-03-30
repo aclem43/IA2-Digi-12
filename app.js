@@ -42,6 +42,15 @@ app.get("/report", (_, res) => {
   };
   res.render("../src/report.html", data);
 });
+
+app.get("/auth", authenticateToken, (req, res) => {
+  res.cookie("authorization", generateAccessToken(req.user), {
+    maxAge: "15000",
+  });
+
+  return res.sendStatus(200);
+});
+
 app.post("/login", (req, res) => {
   let error = false;
   let username = "";
@@ -53,22 +62,18 @@ app.post("/login", (req, res) => {
     error = true;
   }
 
-  console.log(error);
   if (!error) {
     // Verify User
     username = req.body.username;
     password = req.body.password;
     if (username == "admin") {
-      console.log("Admin");
       res.cookie("authorization", generateAccessToken(username), {
-        maxAge: "1800000",
+        maxAge: "15000",
       });
       res.redirect("admin");
       return;
     }
   }
-  console.log(username);
-
   if (error) {
     res.render(
       "../src/index.html",
@@ -86,7 +91,19 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/admin", authenticateToken, (req, res) => {
-  res.send("This route is protected");
+  if (req.user == "admin") {
+    res.render("../src/admin.html");
+  } else {
+    res.redirect("/");
+  }
+});
+
+app.get("/maintainer", authenticateToken, (req, res) => {
+  if (req.user == "maintainer") {
+    res.render("../src/maintainer.html");
+  } else {
+    res.redirect("/");
+  }
 });
 
 app.listen(port, () => {

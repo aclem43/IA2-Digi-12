@@ -8,13 +8,17 @@ const generateAccessToken = (username) => {
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers["cookie"];
+  if (authHeader == undefined) {
+    return res.sendStatus(401);
+  }
   const token = authHeader.split("=")[1];
   if (token == null) return res.sendStatus(401);
 
   jwt.verify(token, generatedToken, (err, user) => {
-    console.log(err);
-
-    if (err) return res.redirect("/");
+    if (err) {
+      console.log(err);
+      return res.redirect("/");
+    }
 
     req.user = user;
 
