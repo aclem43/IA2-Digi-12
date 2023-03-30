@@ -14,6 +14,27 @@
               <li><a href="/admin">Admin</a></li>
             </ol>
           </div>
+          {{>./template/error.html}}
+          <div class="box-sizing">
+            <h1>{{site.siteName}}</h1>
+          </div>
+
+          <form action="/uploadcsv" method="post" enctype="multipart/form-data">
+            <label for="facility">Facility</label>
+            <select name="facility">
+              <option value="park">Park</option>
+              <option value="boat">Boat Ramp</option>
+              <option value="water">Water Quality Site</option>
+            </select>
+            <label for="action">Action</label>
+            <select name="action">
+              <option value="replace">Replace</option>
+              <option value="append">Append</option>
+            </select>
+            <br />
+            <input type="file" name="csv" accept=".csv" />
+            <button>Upload CSV</button>
+          </form>
         </div>
       </div>
     </div>

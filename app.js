@@ -2,8 +2,16 @@ const express = require("express");
 const sprightlyExpress = require("sprightly/express");
 const bodyParser = require("body-parser");
 const { authenticateToken, generateAccessToken } = require("./scripts/jwt");
+const { initilizeDatabase } = require("./scripts/database");
+const { getDefaultSite } = require("./scripts/constants");
+const fs = require("fs");
+const multer = require("multer");
+const upload = multer({ dest: "tmp/" });
+
 const app = express();
 const port = 3000;
+
+initilizeDatabase();
 
 app.engine(
   "html",
@@ -25,10 +33,7 @@ app.use(
 app.get("/", (_, res) => {
   const data = {
     testData: "This is data from the server",
-    site: {
-      siteName: "Bribane City Council Facilities",
-      tabName: "Bribane City Council Facilities - Home",
-    },
+    site: getDefaultSite(),
   };
   res.render("../src/index.html", data);
 });
@@ -36,8 +41,8 @@ app.get("/report", (_, res) => {
   const data = {
     testData: "This is data from the server",
     site: {
-      siteName: "Bribane City Council Facilities",
-      tabName: "Bribane City Council Facilities - Report",
+      ...getDefaultSite(),
+      siteName: getDefaultSite().siteName + " - Report",
     },
   };
   res.render("../src/report.html", data);
@@ -51,19 +56,35 @@ app.get("/auth", authenticateToken, (req, res) => {
   return res.sendStatus(200);
 });
 
+app.post("/uploadcsv", upload.single("csv"), (req, res) => {
+  console.log(req);
+  fs.readFile(req.file.path, "utf8", (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.sendStatus(500);
+    }
+    console.log(data);
+  });
+
+  fs.unlink(req.file.path, (err) => {
+    if (err) {
+      console.error(err);
+      return res.sendStatus(500);
+    }
+    console.log("File deleted");
+  });
+
+  res.redirect("/admin");
+});
+
 app.post("/login", (req, res) => {
   let error = false;
-  let username = "";
-  let password = "";
-  if (!req.body.username) {
+  let username,
+    password = "";
+  if (!req.body.username || !req.body.password) {
     error = true;
   }
-  if (!req.body.password) {
-    error = true;
-  }
-
   if (!error) {
-    // Verify User
     username = req.body.username;
     password = req.body.password;
     if (username == "admin") {
@@ -78,7 +99,7 @@ app.post("/login", (req, res) => {
     res.render(
       "../src/index.html",
       (data = {
-        site: { siteName: "site Name", tabName: "Sitename - Error" },
+        site: { siteName: getDefaultSite().siteName + " -Error" },
         error: {
           message: "Incorrect Username Or Password",
         },
@@ -92,7 +113,7 @@ app.post("/login", (req, res) => {
 
 app.get("/admin", authenticateToken, (req, res) => {
   if (req.user == "admin") {
-    res.render("../src/admin.html");
+    res.render("../src/admin.html", (data = { site: getDefaultSite() }));
   } else {
     res.redirect("/");
   }
