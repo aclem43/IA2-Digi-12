@@ -1,6 +1,7 @@
 .autocomplete {
   position: relative;
   display: inline-block;
+  width: 100%;
 }
 .autocomplete input {
   padding: 3px 2px;
@@ -28,4 +29,8 @@
 .autocomplete-active {
   background-color: DodgerBlue !important;
   color: #ffffff;
+}
+
+.autocomplete input {
+  width: 100%;
 }

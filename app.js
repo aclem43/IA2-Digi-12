@@ -1,12 +1,11 @@
-const express = require("express");
-const sprightlyExpress = require("sprightly/express");
-const bodyParser = require("body-parser");
-const { authenticateToken, generateAccessToken } = require("./scripts/jwt");
-const { initilizeDatabase } = require("./scripts/database");
-const { getDefaultSite } = require("./scripts/constants");
-const fs = require("fs");
-const multer = require("multer");
-const upload = multer({ dest: "tmp/" });
+// Change the following to require statements to imports
+import express from "express";
+import sprightlyExpress from "sprightly/express";
+import bodyParser from "body-parser";
+import { authenticateToken, generateAccessToken } from "./scripts/jwt.js";
+import { initilizeDatabase } from "./scripts/database.js";
+import { getDefaultSite } from "./scripts/constants.js";
+import admin from "./scripts/admin.js";
 
 const app = express();
 const port = 3000;
@@ -29,6 +28,7 @@ app.use(
     extended: true,
   })
 );
+app.use("/", admin);
 
 app.get("/", (_, res) => {
   const data = {
@@ -54,27 +54,6 @@ app.get("/auth", authenticateToken, (req, res) => {
   });
 
   return res.sendStatus(200);
-});
-
-app.post("/uploadcsv", upload.single("csv"), (req, res) => {
-  console.log(req);
-  fs.readFile(req.file.path, "utf8", (err, data) => {
-    if (err) {
-      console.error(err);
-      return res.sendStatus(500);
-    }
-    console.log(data);
-  });
-
-  fs.unlink(req.file.path, (err) => {
-    if (err) {
-      console.error(err);
-      return res.sendStatus(500);
-    }
-    console.log("File deleted");
-  });
-
-  res.redirect("/admin");
 });
 
 app.post("/login", (req, res) => {
@@ -109,14 +88,6 @@ app.post("/login", (req, res) => {
   }
 
   res.render("../src/report.html");
-});
-
-app.get("/admin", authenticateToken, (req, res) => {
-  if (req.user == "admin") {
-    res.render("../src/admin.html", (data = { site: getDefaultSite() }));
-  } else {
-    res.redirect("/");
-  }
 });
 
 app.get("/maintainer", authenticateToken, (req, res) => {

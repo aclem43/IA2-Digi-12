@@ -1,4 +1,6 @@
-const sql = require("mssql");
+import mssql from "mssql";
+
+export const sql = mssql;
 
 const connect = async () => {
   try {
@@ -12,7 +14,7 @@ const connect = async () => {
   }
 };
 
-const initilizeDatabase = async () => {
+export const initilizeDatabase = async () => {
   try {
     await connect();
     await initilizeLocationTable();
@@ -22,7 +24,7 @@ const initilizeDatabase = async () => {
   }
 };
 
-const initilizeLocationTable = async () => {
+export const initilizeLocationTable = async () => {
   // ID, Location/Name, Surburb, Street (Nullable),Lat,Long, original_table
   try {
     const result = await sql.query(
@@ -48,7 +50,7 @@ const initilizeLocationTable = async () => {
   }
 };
 
-const initilizeUserTable = async () => {
+export const initilizeUserTable = async () => {
   try {
     const result = await sql.query(
       "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'users'"
@@ -66,7 +68,14 @@ const initilizeUserTable = async () => {
   }
 };
 
-const insertLocation = async (name, surburb, street, lat, long, table) => {
+export const insertLocation = async (
+  name,
+  surburb,
+  street,
+  lat,
+  long,
+  table
+) => {
   try {
     const prepared = new sql.PreparedStatement();
     prepared.input("name", sql.VarChar(255));
@@ -90,8 +99,24 @@ const insertLocation = async (name, surburb, street, lat, long, table) => {
   } catch (err) {
     console.log(err);
   }
+};
 
-module.exports = {
-  initilizeDatabase: initilizeDatabase,
-  sql: sql,
+export const insertUser = async (userlevel, username, password) => {
+  try {
+    const prepared = new sql.PreparedStatement();
+    prepared.input("userlevel", sql.Int);
+    prepared.input("username", sql.VarChar(255));
+    prepared.input("password", sql.VarChar(255));
+    await prepared.prepare(
+      "INSERT INTO users (userlevel, username, password) VALUES (@userlevel, @username, @password)"
+    );
+    await prepared.execute({
+      userlevel: userlevel,
+      username: username,
+      password: password,
+    });
+    prepared.unprepare();
+  } catch (err) {
+    console.log(err);
+  }
 };
