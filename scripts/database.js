@@ -66,6 +66,31 @@ const initilizeUserTable = async () => {
   }
 };
 
+const insertLocation = async (name, surburb, street, lat, long, table) => {
+  try {
+    const prepared = new sql.PreparedStatement();
+    prepared.input("name", sql.VarChar(255));
+    prepared.input("surburb", sql.VarChar(255));
+    prepared.input("street", sql.VarChar(255));
+    prepared.input("lat", sql.Float);
+    prepared.input("long", sql.Float);
+    prepared.input("table", sql.VarChar(255));
+    await prepared.prepare(
+      "INSERT INTO locations (name, surburb, street, lat, long, original_table) VALUES (@name, @surburb, @street, @lat, @long, @table)"
+    );
+    await prepared.execute({
+      name: name,
+      surburb: surburb,
+      street: street,
+      lat: lat,
+      long: long,
+      table: table,
+    });
+    prepared.unprepare();
+  } catch (err) {
+    console.log(err);
+  }
+
 module.exports = {
   initilizeDatabase: initilizeDatabase,
   sql: sql,
