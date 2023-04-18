@@ -37,6 +37,7 @@ export const initilizeLocationTable = async () => {
     await sql.query(
       `CREATE TABLE [locations] (id INT NOT NULL IDENTITY(1,1)
       PRIMARY KEY,
+      orignal_id VARCHAR(50),
       name VARCHAR(255) NOT NULL,
       surburb VARCHAR(255) NOT NULL,
       street VARCHAR(255),
@@ -69,6 +70,7 @@ export const initilizeUserTable = async () => {
 };
 
 export const insertLocation = async (
+  orignal_id,
   name,
   surburb,
   street,
@@ -78,24 +80,42 @@ export const insertLocation = async (
 ) => {
   try {
     const prepared = new sql.PreparedStatement();
+    prepared.input("orignal_id", sql.VarChar(50));
     prepared.input("name", sql.VarChar(255));
     prepared.input("surburb", sql.VarChar(255));
     prepared.input("street", sql.VarChar(255));
     prepared.input("lat", sql.Float);
     prepared.input("long", sql.Float);
     prepared.input("table", sql.VarChar(255));
-    await prepared.prepare(
-      "INSERT INTO locations (name, surburb, street, lat, long, original_table) VALUES (@name, @surburb, @street, @lat, @long, @table)"
+    prepared.prepare(
+      "INSERT INTO locations (orignal_id,name, surburb, street, lat, long, original_table) VALUES (@orignal_id, @name, @surburb, @street, @lat, @long, @table)",
+      (err) => {
+        if (err) {
+          console.error(err);
+        } else {
+          prepared.execute(
+            {
+              orignal_id: orignal_id,
+              name: name,
+              surburb: surburb,
+              street: street,
+              lat: lat,
+              long: long,
+              table: table,
+            },
+            (err) => {
+              if (err) {
+                console.error(err);
+              } else {
+                prepared.unprepare();
+              }
+            }
+          );
+        }
+      }
     );
-    await prepared.execute({
-      name: name,
-      surburb: surburb,
-      street: street,
-      lat: lat,
-      long: long,
-      table: table,
-    });
-    prepared.unprepare();
+
+    console.log("Inserted location: " + name);
   } catch (err) {
     console.log(err);
   }
@@ -119,4 +139,24 @@ export const insertUser = async (userlevel, username, password) => {
   } catch (err) {
     console.log(err);
   }
+};
+
+export const insertLocationFromPark = async (object) => {
+  const object_id = object["PARK_NUMBER"];
+  const name = object["PARK_NAME"];
+  const surburb = object["SUBURB"];
+  const street = object["STREET_ADDRESS"];
+  const lat = object["LAT"];
+  const long = object["LONG"];
+  if (name == null || surburb == null || lat == null || long == null) {
+    console.log(object);
+    return;
+  } else {
+    await insertLocation(object_id, name, surburb, street, lat, long, "park");
+  }
+};
+
+export const resetLocationTable = async () => {
+  await sql.query("DROP TABLE locations");
+  await initilizeLocationTable();
 };

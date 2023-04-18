@@ -75,15 +75,12 @@ app.post("/login", (req, res) => {
     }
   }
   if (error) {
-    res.render(
-      "../src/index.html",
-      (data = {
-        site: { siteName: getDefaultSite().siteName + " -Error" },
-        error: {
-          message: "Incorrect Username Or Password",
-        },
-      })
-    );
+    res.render("../src/index.html", {
+      site: { siteName: getDefaultSite().siteName + " -Error" },
+      error: {
+        message: "Incorrect Username Or Password",
+      },
+    });
     return;
   }
 
