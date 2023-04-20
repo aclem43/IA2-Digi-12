@@ -3,7 +3,13 @@ import fs from "fs";
 import { getDefaultSite } from "./constants.js";
 import multer from "multer";
 import { authenticateToken } from "./jwt.js";
-import { insertLocationFromPark, resetLocationTable, sql } from "./database.js";
+import {
+  insertLocationFromBoatRamp,
+  insertLocationFromPark,
+  insertLocationFromWaterSite,
+  resetLocationTable,
+  sql,
+} from "./database.js";
 import { readCsv } from "./csv.js";
 
 const upload = multer({ dest: "tmp/" });
@@ -36,7 +42,22 @@ router.post("/uploadcsv", upload.single("csv"), async (req, res) => {
           await insertLocationFromPark(row);
         }
         console.log("Rows Inserted");
+      } else if (req.body.facility == "boat") {
+        if (req.body.action == "replace") {
+          await resetLocationTable();
+        }
+        for (let row of csv) {
+          await insertLocationFromBoatRamp(row);
+        }
+      } else if (req.body.facility == "water") {
+        if (req.body.action == "replace") {
+          await resetLocationTable();
+        }
+        for (let row of csv) {
+          await insertLocationFromWaterSite(row);
+        }
       }
+      console.log("Rows Inserted");
     }
   } else {
     return res.sendStatus(500);

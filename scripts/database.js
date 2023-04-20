@@ -156,6 +156,51 @@ export const insertLocationFromPark = async (object) => {
   }
 };
 
+export const insertLocationFromBoatRamp = async (object) => {
+  const object_id = object["ASSET_ID"];
+  const name = object["DESCRIPTION"];
+  const surburb = object["SUBURB"];
+  const street = object["STREET"];
+  const lat = object["LATITUDE"];
+  const long = object["LONGITUDE"];
+  if (name == null || surburb == null || lat == null || long == null) {
+    console.log(object);
+    return;
+  } else {
+    await insertLocation(
+      object_id,
+      name,
+      surburb,
+      street,
+      lat,
+      long,
+      "boat_ramp"
+    );
+  }
+};
+
+export const insertLocationFromWaterSite = async (object) => {
+  const object_id = object["BCC Site Code"];
+  const name = object["Site Name"];
+  const surburb = object["Suburb"];
+  const street = object["Waterway"];
+  const lat = object["Latitude"];
+  const long = object["Longitude"];
+  if (name == null || surburb == null || lat == null || long == null) {
+    console.log(object);
+    return;
+  } else {
+    await insertLocation(
+      object_id,
+      name,
+      surburb,
+      street,
+      lat,
+      long,
+      "water_site"
+    );
+  }
+};
 export const resetLocationTable = async () => {
   await sql.query("DROP TABLE locations");
   await initilizeLocationTable();
