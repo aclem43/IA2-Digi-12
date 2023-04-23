@@ -3,7 +3,7 @@ import express from "express";
 import sprightlyExpress from "sprightly/express";
 import bodyParser from "body-parser";
 import { authenticateToken, generateAccessToken } from "./scripts/jwt.js";
-import { initilizeDatabase } from "./scripts/database.js";
+import { getAllLocations, initilizeDatabase } from "./scripts/database.js";
 import { getDefaultSite } from "./scripts/constants.js";
 import admin from "./scripts/admin.js";
 
@@ -93,6 +93,15 @@ app.get("/maintainer", authenticateToken, (req, res) => {
   } else {
     res.redirect("/");
   }
+});
+
+app.get("/locations", async (req, res) => {
+  const locations = await getAllLocations();
+  if (!locations) {
+    res.json([]);
+    return;
+  }
+  res.json(locations);
 });
 
 app.listen(port, () => {

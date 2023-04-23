@@ -30,7 +30,13 @@
                     align-content: center;
                   "
                 >
-                  {{>./template/locationAutocomplete.html}}
+                  <div style="display: flex; gap: 10px">
+                    {{>./template/locationAutocomplete.html}}
+                    <button type="button" id="currentLocation">
+                      Use Current Location
+                    </button>
+                  </div>
+
                   <select>
                     <option>Select A Location</option>
                   </select>
@@ -53,3 +59,23 @@
     {{>./template/footer.html}}
   </body>
 </html>
+<script>
+  var setCurrentLocation = function () {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        var lat = position.coords.latitude;
+        var lng = position.coords.longitude;
+        console.log(lat, lng);
+      });
+    } else {
+      console.log("Geolocation is not supported by this browser.");
+    }
+  };
+  addEventListener("load", function () {
+    document
+      .getElementById("currentLocation")
+      .addEventListener("click", function () {
+        setCurrentLocation();
+      });
+  });
+</script>

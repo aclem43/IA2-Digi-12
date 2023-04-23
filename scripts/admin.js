@@ -8,7 +8,6 @@ import {
   insertLocationFromPark,
   insertLocationFromWaterSite,
   resetLocationTable,
-  sql,
 } from "./database.js";
 import { readCsv } from "./csv.js";
 

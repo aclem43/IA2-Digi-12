@@ -201,6 +201,16 @@ export const insertLocationFromWaterSite = async (object) => {
     );
   }
 };
+
+export const getAllLocations = async () => {
+  try {
+    const result = await sql.query("SELECT * FROM locations");
+    return result.recordset;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 export const resetLocationTable = async () => {
   await sql.query("DROP TABLE locations");
   await initilizeLocationTable();
