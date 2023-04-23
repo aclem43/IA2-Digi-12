@@ -6,6 +6,7 @@ import { authenticateToken, generateAccessToken } from "./scripts/jwt.js";
 import { getAllLocations, initilizeDatabase } from "./scripts/database.js";
 import { getDefaultSite } from "./scripts/constants.js";
 import admin from "./scripts/admin.js";
+import location from "./scripts/locations.js";
 
 const app = express();
 const port = 3000;
@@ -29,6 +30,7 @@ app.use(
   })
 );
 app.use("/", admin);
+app.use("/", location);
 
 app.get("/", (_, res) => {
   const data = {
@@ -95,15 +97,6 @@ app.get("/maintainer", authenticateToken, (req, res) => {
   }
 });
 
-app.get("/locations", async (req, res) => {
-  const locations = await getAllLocations();
-  if (!locations) {
-    res.json([]);
-    return;
-  }
-  res.json(locations);
-});
-
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Example app listening on port ${port}`);
 });

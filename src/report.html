@@ -66,6 +66,14 @@
         var lat = position.coords.latitude;
         var lng = position.coords.longitude;
         console.log(lat, lng);
+        fetch("/nearest", {
+          method: "POST",
+          body: JSON.stringify({ lat: lat, lng: lng }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+          });
       });
     } else {
       console.log("Geolocation is not supported by this browser.");
