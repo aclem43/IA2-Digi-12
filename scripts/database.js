@@ -149,7 +149,6 @@ export const insertLocationFromPark = async (object) => {
   const lat = object["LAT"];
   const long = object["LONG"];
   if (name == null || surburb == null || lat == null || long == null) {
-    console.log(object);
     return;
   } else {
     await insertLocation(object_id, name, surburb, street, lat, long, "park");
@@ -158,13 +157,12 @@ export const insertLocationFromPark = async (object) => {
 
 export const insertLocationFromBoatRamp = async (object) => {
   const object_id = object["ASSET_ID"];
-  const name = object["DESCRIPTION"];
+  const name = object["DESCRIPTIO"];
   const surburb = object["SUBURB"];
   const street = object["STREET"];
   const lat = object["LATITUDE"];
   const long = object["LONGITUDE"];
   if (name == null || surburb == null || lat == null || long == null) {
-    console.log(object);
     return;
   } else {
     await insertLocation(
@@ -187,7 +185,6 @@ export const insertLocationFromWaterSite = async (object) => {
   const lat = object["Latitude"];
   const long = object["Longitude"];
   if (name == null || surburb == null || lat == null || long == null) {
-    console.log(object);
     return;
   } else {
     await insertLocation(

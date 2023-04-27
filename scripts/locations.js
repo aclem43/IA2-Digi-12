@@ -26,6 +26,5 @@ router.post("/nearest", async (req, res) => {
     res.json([]);
     return;
   }
-  console.log(locations);
   res.json(locations);
 });

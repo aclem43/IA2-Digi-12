@@ -37,17 +37,16 @@
                     </button>
                   </div>
 
-                  <select>
-                    <option>Select A Location</option>
-                  </select>
-                  <select>
+                  <select name="type">
                     <option>Select A Problem</option>
-                    <option>Pollution</option>
-                    <option>Dead Animal</option>
-                    <option>Vandalism (Damage, Grafiti)</option>
-                    <option>Flood Damage</option>
-                    <option>Malfunction</option>
+                    <option value="pollution">Pollution</option>
+                    <option value="animal"></optionvalue>Dead Animal</option>
+                    <option value="vandalism">Vandalism (Damage, Grafiti)</option>
+                    <option value="flood">Flood Damage</option>
+                    <option value="malfunction">Malfunction</option>
+                    <option value="other">Other. Explain in Notes</option>
                   </select>
+                  <textarea name="notes" placeholder="Notes (Optional)"></textarea>
                   <button type="submit">Report</button>
                 </form>
               </div>
@@ -72,7 +71,7 @@
         })
           .then((res) => res.json())
           .then((data) => {
-            console.log(data);
+            document.getElementById("location").value = data.name;
           });
       });
     } else {

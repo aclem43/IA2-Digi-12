@@ -1,5 +1,6 @@
 export const readCsv = (fileContent) => {
-  fileContent.replace("\r", "");
+  fileContent = fileContent.replace(/\r\n/g, "\n");
+  console.log(fileContent);
   const lines = fileContent.split("\n");
   const headers = lines[0].split(",");
   const data = [];

@@ -7,7 +7,7 @@ import { getAllLocations, initilizeDatabase } from "./scripts/database.js";
 import { getDefaultSite } from "./scripts/constants.js";
 import admin from "./scripts/admin.js";
 import location from "./scripts/locations.js";
-
+import team from "./scripts/team.js";
 const app = express();
 const port = 3000;
 
@@ -31,6 +31,7 @@ app.use(
 );
 app.use("/", admin);
 app.use("/", location);
+app.use("/", team);
 
 app.get("/", (_, res) => {
   const data = {
@@ -75,6 +76,13 @@ app.post("/login", (req, res) => {
       res.redirect("admin");
       return;
     }
+    if (username == "team") {
+      res.cookie("authorization", generateAccessToken(username), {
+        maxAge: "15000",
+      });
+      res.redirect("team");
+      return;
+    }
   }
   if (error) {
     res.render("../src/index.html", {
@@ -87,14 +95,6 @@ app.post("/login", (req, res) => {
   }
 
   res.render("../src/report.html");
-});
-
-app.get("/maintainer", authenticateToken, (req, res) => {
-  if (req.user == "maintainer") {
-    res.render("../src/maintainer.html");
-  } else {
-    res.redirect("/");
-  }
 });
 
 app.listen(port, "0.0.0.0", () => {
