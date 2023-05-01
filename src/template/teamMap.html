@@ -27,6 +27,7 @@
       maxZoom: 19,
       attribution: "© OpenStreetMap",
     });
+    osm.addTo(map);
     fetch("/locations")
       .then((response) => response.json())
       .then((data) => {
@@ -51,16 +52,14 @@
         const parkGroup = L.layerGroup(parks);
         const waterwayGroup = L.layerGroup(waterways);
         const boatGroup = L.layerGroup(boatRamps);
-
+        const jobs = L.layerGroup([]);
         var layerControl = L.control
-          .layers(
-            { map: osm },
-            {
-              Parks: parkGroup,
-              Waterways: waterwayGroup,
-              BoatRamps: boatGroup,
-            }
-          )
+          .layers({
+            Parks: parkGroup,
+            Waterways: waterwayGroup,
+            BoatRamps: boatGroup,
+            Jobs: jobs,
+          })
           .addTo(map);
       });
   </script>

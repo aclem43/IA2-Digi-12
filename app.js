@@ -3,11 +3,16 @@ import express from "express";
 import sprightlyExpress from "sprightly/express";
 import bodyParser from "body-parser";
 import { authenticateToken, generateAccessToken } from "./scripts/jwt.js";
-import { getAllLocations, initilizeDatabase } from "./scripts/database.js";
+import {
+  getAllLocations,
+  initilizeDatabase,
+  insertReport,
+} from "./scripts/database.js";
 import { getDefaultSite } from "./scripts/constants.js";
 import admin from "./scripts/admin.js";
 import location from "./scripts/locations.js";
 import team from "./scripts/team.js";
+import { getLocationByName } from "./scripts/utils.js";
 const app = express();
 const port = 3000;
 
@@ -35,14 +40,43 @@ app.use("/", team);
 
 app.get("/", (_, res) => {
   const data = {
-    testData: "This is data from the server",
     site: getDefaultSite(),
   };
   res.render("../src/index.html", data);
 });
 app.get("/report", (_, res) => {
   const data = {
-    testData: "This is data from the server",
+    site: {
+      ...getDefaultSite(),
+      siteName: getDefaultSite().siteName + " - Report",
+    },
+  };
+  res.render("../src/report.html", data);
+});
+
+app.post("/report", async (req, res) => {
+  if (req.body.location != null && req.body.type != "Select A Problem") {
+    const data = {
+      site: {
+        ...getDefaultSite(),
+        siteName: getDefaultSite().siteName + " - Report",
+      },
+    };
+    const date = new Date().toLocaleString();
+    console.log(date);
+    await insertReport(
+      getLocationByName(req.body.location, await getAllLocations()).id,
+      date,
+      req.body.type,
+      req.body.notes
+    );
+    res.render("../src/report.html", data);
+    return;
+  }
+  const data = {
+    error: {
+      message: "Invalid Input",
+    },
     site: {
       ...getDefaultSite(),
       siteName: getDefaultSite().siteName + " - Report",

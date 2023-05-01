@@ -19,6 +19,7 @@ export const initilizeDatabase = async () => {
     await connect();
     await initilizeLocationTable();
     await initilizeUserTable();
+    await initilizeReportTable();
   } catch (err) {
     console.log(err);
   }
@@ -64,6 +65,66 @@ export const initilizeUserTable = async () => {
       "CREATE TABLE [users] (id INT NOT NULL IDENTITY(1,1) PRIMARY KEY, userlevel INT NOT NULL ,username VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL)"
     );
     console.log("User Table created");
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const initilizeReportTable = async () => {
+  try {
+    const result = await sql.query(
+      "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'reports'"
+    );
+    if (result.recordset.length > 0) {
+      console.log("Report Table already exists");
+      return;
+    }
+    await sql.query(
+      "CREATE TABLE [reports] (id INT NOT NULL IDENTITY(1,1) PRIMARY KEY, location_id INT NOT NULL, report_date VARCHAR(30) NOT NULL, report_type VARCHAR(15) NOT NULL, report_description VARCHAR(255))"
+    );
+    console.log("Report Table created");
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const insertReport = async (
+  location_id,
+  report_date,
+  report_type,
+  report_description
+) => {
+  try {
+    const prepared = new sql.PreparedStatement();
+    prepared.input("location_id", sql.Int);
+    prepared.input("report_date", sql.VarChar(30));
+    prepared.input("report_type", sql.VarChar(15));
+    prepared.input("report_description", sql.VarChar(255));
+    prepared.prepare(
+      "INSERT INTO reports (location_id, report_date, report_type, report_description) VALUES (@location_id, @report_date, @report_type, @report_description)",
+      (err) => {
+        if (err) {
+          console.error(err);
+        } else {
+          prepared.execute(
+            {
+              location_id: location_id,
+              report_date: report_date,
+              report_type: report_type,
+              report_description: report_description,
+            },
+            (err) => {
+              if (err) {
+                console.error(err);
+              } else {
+                prepared.unprepare();
+              }
+            }
+          );
+        }
+      }
+    );
+    console.log("Inserted report");
   } catch (err) {
     console.log(err);
   }
@@ -179,12 +240,13 @@ export const insertLocationFromBoatRamp = async (object) => {
 
 export const insertLocationFromWaterSite = async (object) => {
   const object_id = object["BCC Site Code"];
-  const name = object["Site Name"];
+  const name = object[Object.keys(object)[0]];
   const surburb = object["Suburb"];
-  const street = object["Waterway"];
+  const street = object[Object.keys(object)[0]];
   const lat = object["Latitude"];
   const long = object["Longitude"];
   if (name == null || surburb == null || lat == null || long == null) {
+    console.log(object);
     return;
   } else {
     await insertLocation(

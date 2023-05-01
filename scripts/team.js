@@ -12,3 +12,11 @@ router.get("/team", authenticateToken, (req, res) => {
     res.redirect("/");
   }
 });
+
+router.get("/active", authenticateToken, (req, res) => {
+  if (req.user == "team") {
+    res.render("../src/active.html", { site: getDefaultSite() });
+  } else {
+    res.redirect("/");
+  }
+});

@@ -29,6 +29,8 @@
                     justify-content: center;
                     align-content: center;
                   "
+                  action="/report" 
+                  method="post"
                 >
                   <div style="display: flex; gap: 10px">
                     {{>./template/locationAutocomplete.html}}
@@ -46,7 +48,7 @@
                     <option value="malfunction">Malfunction</option>
                     <option value="other">Other. Explain in Notes</option>
                   </select>
-                  <textarea name="notes" placeholder="Notes (Optional)"></textarea>
+                  <textarea name="notes" placeholder="Notes"></textarea>
                   <button type="submit">Report</button>
                 </form>
               </div>

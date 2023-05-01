@@ -31,3 +31,13 @@ export const getNearestLocations = (lat, long, locations) => {
   });
   return closest;
 };
+export const getLocationByName = (locationName, locations) => {
+  let location = null;
+  locations.forEach((loc) => {
+    if (loc.name == locationName) {
+      location = loc;
+      return location;
+    }
+  });
+  return location;
+};
