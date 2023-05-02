@@ -52,13 +52,11 @@
         const parkGroup = L.layerGroup(parks);
         const waterwayGroup = L.layerGroup(waterways);
         const boatGroup = L.layerGroup(boatRamps);
-        const jobs = L.layerGroup([]);
         var layerControl = L.control
           .layers({
             Parks: parkGroup,
             Waterways: waterwayGroup,
             BoatRamps: boatGroup,
-            Jobs: jobs,
           })
           .addTo(map);
       });

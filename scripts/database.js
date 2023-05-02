@@ -261,6 +261,34 @@ export const insertLocationFromWaterSite = async (object) => {
   }
 };
 
+export const getALLReports = async () => {
+  try {
+    const result = await sql.query("SELECT * FROM reports");
+    return result.recordset;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const getALLReportsWithLocation = async () => {
+  const reports = await getALLReports();
+  const locations = await getAllLocations();
+  const reportsWithLocation = [];
+  for (let report of reports) {
+    for (let location of locations) {
+      if (report.location_id == location.id) {
+        const reportWithLocation = {
+          ...report,
+          location: location,
+        };
+        reportsWithLocation.push(reportWithLocation);
+      }
+    }
+  }
+
+  return reportsWithLocation;
+};
+
 export const getAllLocations = async () => {
   try {
     const result = await sql.query("SELECT * FROM locations");

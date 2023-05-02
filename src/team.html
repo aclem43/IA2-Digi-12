@@ -15,13 +15,151 @@
             </ol>
           </div>
           {{>./template/error.html}}
-          <div class="box-sizing">
-            <h1>{{site.siteName}}</h1>
+          <div
+            class="box-sizing"
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <h1>Facility Reports</h1>
+            <button onclick="sortReports()">Sort By Distance</button>
           </div>
-          <div>{{>./template/teamMap.html}}</div>
+          <div style="display: flex; gap: 10px">
+            <div style="flex-grow: 1">{{>./template/teamMap.html}}</div>
+            <div class="reports" id="reports"></div>
+          </div>
         </div>
       </div>
     </div>
     {{>./template/footer.html}}
   </body>
 </html>
+<style>
+  .reports {
+    flex-direction: column;
+    display: flex;
+    gap: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 10px;
+    max-height: 380px;
+    overflow-y: scroll;
+  }
+  .report {
+    border: solid 1px black;
+    border-radius: 5px;
+    padding: 5px;
+    min-width: 200px;
+    cursor: pointer;
+  }
+  .report h4 {
+    margin: 0;
+  }
+  .report-description {
+    font-size: small;
+    max-width: 200px;
+  }
+</style>
+
+<script>
+  var getDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Radius of the earth in km
+    const dLat = deg2rad(lat2 - lat1); // deg2rad below
+    const dLon = deg2rad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(lat1)) *
+        Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c; // Distance in km
+    return d;
+  };
+
+  var deg2rad = (deg) => {
+    return deg * (Math.PI / 180);
+  };
+</script>
+
+<script>
+  let currentMarker = null;
+  let reportData = [];
+  fetch("/reports")
+    .then((res) => res.json())
+    .then((data) => {
+      const reports = document.getElementById("reports");
+      reportData = data;
+      showReports();
+    });
+
+  const showReports = () => {
+    const reports = document.getElementById("reports");
+    reports.innerHTML = "";
+    for (let report of reportData) {
+      const reportDiv = document.createElement("div");
+      reportDiv.addEventListener("click", () => {
+        onClick(report);
+      });
+      reportDiv.classList.add("report");
+      reportDiv.innerHTML = `
+          <h4>${report.report_type}</h4>
+          <div>${report.location.name}</div>
+          <div class=".report-description ">${report.report_description}</div>
+        `;
+      reports.appendChild(reportDiv);
+    }
+  };
+
+  const onClick = (report) => {
+    if (currentMarker) {
+      map.removeLayer(currentMarker);
+    }
+    currentMarker = L.marker([report.location.lat, report.location.long]);
+    currentMarker.addTo(map);
+    currentMarker.bindPopup(report.report_description).openPopup();
+    map.setView([report.location.lat, report.location.long], 15);
+  };
+
+  const sortReports = () => {
+    let userLocation = navigator.geolocation.getCurrentPosition((position) => {
+      sortReports(position.coords);
+    });
+    if (!userLocation) {
+      userLocation = { lat: -27.4698, long: 153.0251 };
+    }
+    const locationMarker = L.marker([userLocation.lat, userLocation.long], {
+      icon: greenIcon,
+    });
+    locationMarker.bindPopup("Your Location").openPopup();
+    locationMarker.addTo(map);
+    reportData.sort((a, b) => {
+      return (
+        getDistance(
+          a.location.lat,
+          a.location.long,
+          userLocation.lat,
+          userLocation.long
+        ) -
+        getDistance(
+          b.location.lat,
+          b.location.long,
+          userLocation.lat,
+          userLocation.long
+        )
+      );
+    });
+    showReports();
+  };
+
+  var greenIcon = new L.Icon({
+    iconUrl:
+      "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41],
+  });
+</script>

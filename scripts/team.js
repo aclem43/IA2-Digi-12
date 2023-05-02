@@ -1,6 +1,7 @@
 import express from "express";
 import { getDefaultSite } from "./constants.js";
 import { authenticateToken } from "./jwt.js";
+import { getALLReportsWithLocation } from "./database.js";
 
 const router = express.Router();
 export default router;
@@ -19,4 +20,10 @@ router.get("/active", authenticateToken, (req, res) => {
   } else {
     res.redirect("/");
   }
+});
+
+router.get("/reports", async (req, res) => {
+  const reports = await getALLReportsWithLocation();
+
+  return res.json(reports);
 });
