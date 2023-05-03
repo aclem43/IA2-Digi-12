@@ -6,4 +6,5 @@ This is my year 12 Digital Soloutions asignment.
 
 - Express JS
 - Sprightly
-- Crypyo-JS
+- Crypto-JS
+- LeafletJS
