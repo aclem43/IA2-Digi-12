@@ -18,7 +18,51 @@
           <div class="box-sizing">
             <h1>{{site.siteName}}</h1>
           </div>
+          <div class="overlay" hidden>
+            <div class="overlay-container">
+              <form
+                autocomplete="off"
+                class="inner-overlay"
+                action="/edit"
+                method="post"
+              >
+                <h4>Edit Report</h4>
 
+                <input type="hidden" name="id" />
+                <div style="display: flex; gap: 10px">
+                  {{>./template/locationAutocomplete.html}}
+                  <button type="button" id="currentLocation">
+                    Use Current Location
+                  </button>
+                </div>
+                <select name="type">
+                  <option>Select A Problem</option>
+                  <option value="pollution">Pollution</option>
+                  <option value="animal">Dead Animal</option>
+                  <option value="vandalism">Vandalism (Damage, Grafiti)</option>
+                  <option value="flood">Flood Damage</option>
+                  <option value="malfunction">Malfunction</option>
+                  <option value="other">Other. Explain in Notes</option>
+                </select>
+                <textarea name="notes" placeholder="Notes"></textarea>
+                <div style="display: flex; gap: 10px">
+                  <button type="submit">Edit</button>
+                  <button type="button" onclick="closeOverlay()">Close</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <table>
+            <tr>
+              <th>Report ID</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Location</th>
+              <th>Edit</th>
+              <th>Delete</th>
+            </tr>
+            <tbody id="reports"></tbody>
+          </table>
           <form action="/uploadcsv" method="post" enctype="multipart/form-data">
             <label for="facility">Facility</label>
             <select name="facility">
@@ -71,3 +115,86 @@
     {{>./template/footer.html}}
   </body>
 </html>
+<script>
+  fetch("/reports").then((res) => {
+    res.json().then((data) => {
+      let reports = document.getElementById("reports");
+      data.forEach((report) => {
+        let row = document.createElement("tr");
+        let reportId = document.createElement("td");
+        let reportType = document.createElement("td");
+        let reportDescription = document.createElement("td");
+        let reportLocation = document.createElement("td");
+        let reportEdit = document.createElement("td");
+        let reportDelete = document.createElement("td");
+        let editLink = document.createElement("button");
+        let deleteLink = document.createElement("a");
+        editLink.innerText = "Edit";
+        editLink.addEventListener("click", () => {
+          let overlay = document.querySelector(".overlay");
+          overlay.hidden = false;
+          let form = overlay.querySelector("form");
+          form.querySelector("input[name=id]").value = report.id;
+          form.querySelector("select[name=type]").value = report.report_type;
+          form.querySelector("textarea[name=notes]").value =
+            report.report_description;
+          form.querySelector("input[name=location]").value =
+            report.location.name;
+          console.log("Edit");
+        });
+        deleteLink.href = "/delete/" + report.id;
+        deleteLink.innerText = "Delete";
+        reportId.innerText = report.id;
+        reportType.innerText = report.report_type;
+        reportDescription.innerText = report.report_description;
+        reportLocation.innerText = report.location.name;
+        reportEdit.appendChild(editLink);
+        reportDelete.appendChild(deleteLink);
+        row.appendChild(reportId);
+        row.appendChild(reportType);
+        row.appendChild(reportDescription);
+        row.appendChild(reportLocation);
+        row.appendChild(reportEdit);
+        row.appendChild(reportDelete);
+        reports.appendChild(row);
+      });
+    });
+  });
+  const closeOverlay = () => {
+    let overlay = document.querySelector(".overlay");
+    overlay.hidden = true;
+    console.log("Close");
+  };
+</script>
+<style>
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+  .overlay-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  .inner-overlay {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 40px;
+    gap: 10px;
+    justify-content: center;
+    align-content: center;
+    background-color: white;
+    border: black solid 1px;
+    border-radius: 5px;
+    max-width: 400px;
+  }
+  .inner-overlay h4 {
+    margin: 0;
+  }
+</style>
