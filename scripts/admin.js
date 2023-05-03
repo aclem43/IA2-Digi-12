@@ -4,10 +4,12 @@ import { getDefaultSite } from "./constants.js";
 import multer from "multer";
 import { authenticateToken } from "./jwt.js";
 import {
+  deleteReport,
   insertLocationFromBoatRamp,
   insertLocationFromPark,
   insertLocationFromWaterSite,
   resetLocationTable,
+  updateReport,
 } from "./database.js";
 import { readCsv } from "./csv.js";
 
@@ -71,4 +73,22 @@ router.post("/uploadcsv", upload.single("csv"), async (req, res) => {
   });
 
   res.redirect("/admin");
+});
+
+router.get("/deleteReport/:id", authenticateToken, async (req, res) => {
+  if (req.user == "admin") {
+    await deleteReport(req.params.id);
+    res.redirect("/admin");
+  } else {
+    res.redirect("/");
+  }
+});
+
+router.post("/editReport", authenticateToken, async (req, res) => {
+  if (req.user == "admin") {
+    await updateReport(req.body.id, req.body.notes, req.body.type);
+    res.redirect("/admin");
+  } else {
+    res.redirect("/");
+  }
 });

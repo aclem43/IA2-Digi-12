@@ -302,3 +302,49 @@ export const resetLocationTable = async () => {
   await sql.query("DROP TABLE locations");
   await initilizeLocationTable();
 };
+
+export const deleteReport = async (id) => {
+  try {
+    const prepared = new sql.PreparedStatement();
+    prepared.input("id", sql.Int);
+    await prepared.prepare("DELETE FROM reports WHERE id = @id");
+    await prepared.execute({ id: id });
+    prepared.unprepare();
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const updateReport = (id, notes, type) => {
+  try {
+    const prepared = new sql.PreparedStatement();
+    prepared.input("id", sql.Int);
+    prepared.input("notes", sql.VarChar(255));
+    prepared.input("type", sql.VarChar(255));
+    prepared.prepare(
+      "UPDATE reports SET report_description = @notes, report_type = @type WHERE id = @id",
+      (err) => {
+        if (err) {
+          console.error(err);
+        } else {
+          prepared.execute(
+            {
+              id: id,
+              notes: notes,
+              type: type,
+            },
+            (err) => {
+              if (err) {
+                console.error(err);
+              } else {
+                prepared.unprepare();
+              }
+            }
+          );
+        }
+      }
+    );
+  } catch (err) {
+    console.log(err);
+  }
+};

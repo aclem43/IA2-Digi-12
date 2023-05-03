@@ -23,7 +23,7 @@
               <form
                 autocomplete="off"
                 class="inner-overlay"
-                action="/edit"
+                action="/editReport"
                 method="post"
               >
                 <h4>Edit Report</h4>
@@ -63,6 +63,7 @@
             </tr>
             <tbody id="reports"></tbody>
           </table>
+          <h3>Update Database with csv file</h3>
           <form action="/uploadcsv" method="post" enctype="multipart/form-data">
             <label for="facility">Facility</label>
             <select name="facility">
@@ -142,7 +143,7 @@
             report.location.name;
           console.log("Edit");
         });
-        deleteLink.href = "/delete/" + report.id;
+        deleteLink.href = "/deleteReport/" + report.id;
         deleteLink.innerText = "Delete";
         reportId.innerText = report.id;
         reportType.innerText = report.report_type;
