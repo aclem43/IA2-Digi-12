@@ -80,7 +80,7 @@ const initilizeReportTable = async () => {
       return;
     }
     await sql.query(
-      "CREATE TABLE [reports] (id INT NOT NULL IDENTITY(1,1) PRIMARY KEY, location_id INT NOT NULL, report_date VARCHAR(30) NOT NULL, report_type VARCHAR(15) NOT NULL, report_description VARCHAR(255))"
+      "CREATE TABLE [reports] (id INT NOT NULL IDENTITY(1,1) PRIMARY KEY, location_id INT NOT NULL, report_date VARCHAR(30) NOT NULL, report_type VARCHAR(15) NOT NULL, report_description VARCHAR(255), complete TINYINT)"
     );
     console.log("Report Table created");
   } catch (err) {
@@ -332,6 +332,38 @@ export const updateReport = (id, notes, type) => {
               id: id,
               notes: notes,
               type: type,
+            },
+            (err) => {
+              if (err) {
+                console.error(err);
+              } else {
+                prepared.unprepare();
+              }
+            }
+          );
+        }
+      }
+    );
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const updateReportComplete = (id, complete) => {
+  try {
+    const prepared = new sql.PreparedStatement();
+    prepared.input("id", sql.Int);
+    prepared.input("complete", sql.Bit);
+    prepared.prepare(
+      "UPDATE reports SET complete = @complete WHERE id = @id",
+      (err) => {
+        if (err) {
+          console.error(err);
+        } else {
+          prepared.execute(
+            {
+              id: id,
+              complete: complete,
             },
             (err) => {
               if (err) {

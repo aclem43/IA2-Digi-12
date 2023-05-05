@@ -10,6 +10,7 @@ import {
   insertLocationFromWaterSite,
   resetLocationTable,
   updateReport,
+  updateReportComplete,
 } from "./database.js";
 import { readCsv } from "./csv.js";
 
@@ -91,4 +92,8 @@ router.post("/editReport", authenticateToken, async (req, res) => {
   } else {
     res.redirect("/");
   }
+});
+
+router.post("/updateCompleteReport", (req, res) => {
+  updateReportComplete(req.body.id, req.body.complete);
 });

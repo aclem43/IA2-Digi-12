@@ -118,18 +118,33 @@
       map.removeLayer(currentMarker);
     }
     currentMarker = L.marker([report.location.lat, report.location.long]);
+    const userLocation = getUserLocation();
+    const distance =
+      getDistance(
+        report.location.lat,
+        report.location.long,
+        userLocation.lat,
+        userLocation.long
+      ).toFixed(2) + "km from current location";
     currentMarker.addTo(map);
-    currentMarker.bindPopup(report.report_description).openPopup();
+    currentMarker
+      .bindPopup(report.report_description + "<br>" + distance)
+      .openPopup();
     map.setView([report.location.lat, report.location.long], 15);
   };
 
-  const sortReports = () => {
+  const getUserLocation = () => {
     let userLocation = navigator.geolocation.getCurrentPosition((position) => {
       sortReports(position.coords);
     });
     if (!userLocation) {
       userLocation = { lat: -27.4698, long: 153.0251 };
     }
+    return userLocation;
+  };
+
+  const sortReports = () => {
+    const userLocation = getUserLocation();
     const locationMarker = L.marker([userLocation.lat, userLocation.long], {
       icon: greenIcon,
     });
