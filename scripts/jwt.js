@@ -1,6 +1,6 @@
-const generatedToken =
-  "f91bcbe4ea7dfc0bb2cd8aba4f8e8cb500939dba67ec7ba1f19fc3ffc8d1f510438a849e955e0fb50d6ad1430757a8bffbcdba5594cba54de12b48a7f3de901a"; // require("crypto").randomBytes(64).toString("hex");
+const generatedToken = require("crypto").randomBytes(64).toString("hex");
 import jwt from "jsonwebtoken";
+import { getUser } from "./database";
 
 export const generateAccessToken = (username) => {
   return jwt.sign(username, generatedToken);
@@ -19,9 +19,19 @@ export const authenticateToken = (req, res, next) => {
       console.log(err);
       return res.redirect("/");
     }
-
     req.user = user;
-
     next();
   });
 };
+
+const verifyUser = (username, password) => {
+  getUser(username).then((user) => {
+    if (user == null) {
+      return false;
+    }
+    if (user.password == password) {
+      return true;
+    }
+    return false;
+  }
+}

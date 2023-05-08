@@ -30,7 +30,6 @@ router.post("/uploadcsv", upload.single("csv"), async (req, res) => {
   if (!req.file) {
     return res.sendStatus(500);
   }
-  console.log("Recieved");
   const fileContents = fs.readFileSync(req.file.path, "utf8");
 
   if (fileContents != null) {

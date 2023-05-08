@@ -1,5 +1,4 @@
 <link rel="stylesheet" type="text/css" href="components.css" media="all" />
-
 <div class="autocomplete">
   <input
     id="location"
@@ -17,10 +16,8 @@
         parsedData.push(data[i].name);
       }
       autocomplete(document.getElementById("location"), parsedData);
-
       return parsedData;
     });
-  console.log(locationData);
   function autocomplete(inp, arr) {
     var currentFocus;
     inp.addEventListener("input", function (e) {
@@ -68,13 +65,10 @@
       }
     });
     function addActive(x) {
-      /*a function to classify an item as "active":*/
       if (!x) return false;
-      /*start by removing the "active" class on all items:*/
       removeActive(x);
       if (currentFocus >= x.length) currentFocus = 0;
       if (currentFocus < 0) currentFocus = x.length - 1;
-      /*add class "autocomplete-active":*/
       x[currentFocus].classList.add("autocomplete-active");
     }
     function removeActive(x) {

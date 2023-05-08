@@ -380,3 +380,16 @@ export const updateReportComplete = (id, complete) => {
     console.log(err);
   }
 };
+
+export const getUser = async (username) => {
+  try {
+    const prepared = new sql.PreparedStatement();
+    prepared.input("username", sql.VarChar(255));
+    await prepared.prepare("SELECT * FROM users WHERE username = @username");
+    const result = await prepared.execute({ username: username });
+    prepared.unprepare();
+    return result.recordset[0];
+  } catch (err) {
+    console.log(err);
+  }
+};
