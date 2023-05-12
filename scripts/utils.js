@@ -1,5 +1,3 @@
-export const isClosest = () => {};
-
 export const getDistance = (lat1, lon1, lat2, lon2) => {
   const R = 6371; // Radius of the earth in km
   const dLat = deg2rad(lat2 - lat1); // deg2rad below

@@ -103,19 +103,23 @@ app.post("/login", (req, res) => {
   if (!error) {
     username = req.body.username;
     password = req.body.password;
-    if (username == "admin") {
-      res.cookie("authorization", generateAccessToken(username), {
+    if (username == "kate407@brisbane.qld.gov.au" && password == "kate407") {
+      res.cookie("authorization", generateAccessToken("admin"), {
         maxAge: "15000",
       });
       res.redirect("admin");
       return;
-    }
-    if (username == "team") {
-      res.cookie("authorization", generateAccessToken(username), {
+    } else if (
+      username == "kathryn132@brisbane.qld.gov.au" &&
+      password == "kathryn132"
+    ) {
+      res.cookie("authorization", generateAccessToken("team"), {
         maxAge: "15000",
       });
       res.redirect("team");
       return;
+    } else {
+      error = true;
     }
   }
   if (error) {
@@ -128,7 +132,7 @@ app.post("/login", (req, res) => {
     return;
   }
 
-  res.render("../src/report.html");
+  res.render("../src/index.html");
 });
 
 app.listen(port, "0.0.0.0", () => {

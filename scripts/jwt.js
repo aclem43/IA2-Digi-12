@@ -1,6 +1,7 @@
-const generatedToken = require("crypto").randomBytes(64).toString("hex");
+import cryptoJs from "crypto-js";
+const generatedToken = "42353450843ewudfoishfksjdhgfkjsh"; //cryptoJs.randomBytes(64).toString("hex");
 import jwt from "jsonwebtoken";
-import { getUser } from "./database";
+import { getUser } from "./database.js";
 
 export const generateAccessToken = (username) => {
   return jwt.sign(username, generatedToken);
@@ -33,5 +34,5 @@ const verifyUser = (username, password) => {
       return true;
     }
     return false;
-  }
-}
+  });
+};
