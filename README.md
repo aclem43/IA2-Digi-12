@@ -1,6 +1,6 @@
 # IA2-Digi-12
 
-This is my year 12 Digital Soloutions asignment.
+This is my year 12 Internal Assesment 2 Digital Soloutions asignment.
 
 ## Technolgy
 
